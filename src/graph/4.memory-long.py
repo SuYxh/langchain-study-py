@@ -23,6 +23,7 @@ store.put(
     },
 )
 
+
 # 定义⼯具
 @tool(return_direct=False)
 def get_user_info(config: RunnableConfig) -> str:
