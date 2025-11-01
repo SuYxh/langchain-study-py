@@ -1,21 +1,9 @@
-from langchain_community.embeddings import DashScopeEmbeddings
 from langchain_redis import RedisConfig, RedisVectorStore
-from langchain_openai import OpenAIEmbeddings
-from dotenv import load_dotenv
+from embedding import create_embedding_model
 import os
 
-load_dotenv()
-
-# 方法二（临时测试）：直接在代码中写入（注意安全风险）
-# api_key = "你的硅基流动API密钥" # <--- 替换成你自己的 Key
-api_key = os.environ.get("SILICONFLOW_API_KEY")
-
-# 初始化 embedding 模型
-embedding_model = OpenAIEmbeddings(
-    model="Qwen/Qwen3-Embedding-8B",  # 指定模型名称
-    api_key=api_key,                  # 你的 API Key
-    base_url="https://api.siliconflow.cn/v1" # 硅基流动的 API 基础地址
-)
+# 创建 embedding 模型实例
+embedding_model = create_embedding_model()
 
 # --- 配置 Redis 向量数据库 ---
 redis_url = "redis://localhost:6379"
