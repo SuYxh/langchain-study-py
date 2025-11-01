@@ -5,7 +5,8 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.config import get_stream_writer
 from langgraph.constants import START, END
 from langgraph.graph import StateGraph
-
+from langchain_redis import RedisConfig, RedisVectorStore
+from embedding import create_embedding_model
 # from langchain_community.embeddings import DashScopeEmbeddings
 # from langchain_community.vectorstores import RedisVectorStore
 from langchain_core.prompts import ChatPromptTemplate
@@ -146,7 +147,40 @@ def couplet_node(state: State):
     writer = get_stream_writer()
     writer({"node": ">>>> couplet_node"})
 
-    return {"messages": [HumanMessage(content="couplet_node")], "type": "couplet"}
+    # Redis向量数据库配置
+    # 创建 embedding 模型实例
+    embedding_model = create_embedding_model()
+
+    # --- 配置 Redis 向量数据库 ---
+    redis_url = "redis://localhost:6379"
+    config = RedisConfig(index_name="couplet", redis_url=redis_url)
+
+    # 初始化向量存储，使用新的 embedding_model
+    vector_store = RedisVectorStore(embeddings=embedding_model, config=config)
+
+    query = get_message_content(state["messages"][0])
+    samples = []
+    scored_results = vector_store.similarity_search_with_score(query, k=10)
+    for doc, score in scored_results:
+        samples.append(doc.page_content)
+
+    prompt_template = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                """你是一个专业的对联大师，你的任务是根据用户给出的上联设计一个下联。
+        回答时可以参考下面的参考对联。
+        参考对联: {samples}
+        请用中文回答问题""",
+            ),
+            ("user", "{text}"),
+        ]
+    )
+
+    prompt = prompt_template.invoke({"samples": samples, "text": query})
+    response = llm.invoke(prompt)
+    writer({"couplet_result": response.content})
+    return {"messages": [HumanMessage(content=response.content)], "type": "couplet"}
 
 
 def other_node(state: State):
@@ -207,6 +241,7 @@ if __name__ == "__main__":
                 HumanMessage(content="帮我规划一条从杭州富力中心到西湖的自驾路线")
             ]
         },
+        # {"messages": ["帮我对个对联，上联是: 瑞雪兆丰年"]},
         config,
         stream_mode="custom",
     ):
