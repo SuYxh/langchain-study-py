@@ -1,14 +1,22 @@
-from langchain_community.embeddings import DashScopeEmbeddings
-from langchain_community.vectorstores import RedisVectorStore
-from langchain_redis import RedisConfig
+from langchain_redis import RedisConfig, RedisVectorStore
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_community.chat_models import ChatTongyi
+from llm import create_siliconflow_model
+from embedding import create_embedding_model
+
+
+llm = create_siliconflow_model()
+# 创建 embedding 模型实例
+embedding_model = create_embedding_model()
+
 
 # 初始化
+# --- 配置 Redis 向量数据库 ---
 redis_url = "redis://localhost:6379"
 config = RedisConfig(index_name="couplet", redis_url=redis_url)
-vector_store = RedisVectorStore(embedding_model=DashScopeEmbeddings(), config=config)
-llm = ChatTongyi(model="qwen-plus", api_key="YOUR_API_KEY")
+
+# 初始化向量存储，使用新的 embedding_model
+vector_store = RedisVectorStore(embeddings=embedding_model, config=config)
+
 
 # 检索测试
 query = "帮我对个对联，上联是: 瑞雪兆丰年"

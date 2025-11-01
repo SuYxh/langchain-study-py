@@ -271,8 +271,8 @@ cache/
 
 # Data files (if not meant to be versioned)
 data/
-*.csv
-*.json
+# *.csv
+# *.json
 *.parquet
 
 # Output files
