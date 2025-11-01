@@ -18,27 +18,27 @@ async def main():
     """主异步函数"""
     # 加载环境变量
     load_dotenv()
-    
+
     # 创建支持异步的模型实例（解决SSL证书问题）
     import ssl
     import httpx
     from langchain.chat_models import init_chat_model
-    
+
     # 解决SSL证书验证问题
     ssl_context = ssl.create_default_context()
     ssl_context.check_hostname = False
     ssl_context.verify_mode = ssl.CERT_NONE
-    
+
     # 创建异步HTTP客户端
     async_client = httpx.AsyncClient(verify=False, timeout=30.0)
-    
+
     # 获取API密钥
     api_key = os.environ.get("SILICONFLOW_API_KEY")
     map_api_key = os.environ.get("AMAP_MAPS_API_KEY")
 
     if not api_key:
         raise ValueError("SILICONFLOW_API_KEY not found in environment variables.")
-    
+
     # 创建模型
     model = init_chat_model(
         "Qwen/Qwen3-8B",
@@ -53,7 +53,7 @@ async def main():
         {
             # 这个会有问题
             # "amap-amap-sse": {
-            #     "url": f"https://mcp.amap.com/sse?key={map_api_key}", 
+            #     "url": f"https://mcp.amap.com/sse?key={map_api_key}",
             #     "transport": "streamable_http",
             # },
             "amap-maps": {
