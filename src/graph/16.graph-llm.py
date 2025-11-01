@@ -17,6 +17,7 @@ def call_model(state: MessagesState):
     response = model.invoke(state["messages"])
     return {"messages": response}
 
+
 builder = StateGraph(MessagesState)
 
 builder.add_node(call_model)

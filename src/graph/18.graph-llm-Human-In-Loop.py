@@ -21,30 +21,29 @@ llm = create_siliconflow_model("Qwen/Qwen3-8B")
 class State(TypedDict):
     messages: Annotated[list[AnyMessage], add]
 
+
 def human_approval(state: State) -> Command[Literal["call_llm", END]]:
-    is_approved = interrupt(
-        {
-            "question": "是否同意调用大语言模型？"
-        }
-    )
+    is_approved = interrupt({"question": "是否同意调用大语言模型？"})
 
     if is_approved:
         return Command(goto="call_llm")
     else:
         return Command(goto=END)
 
-def call_llm(state:State):
+
+def call_llm(state: State):
     response = llm.invoke(state["messages"])
     return {"messages": [response]}
+
 
 builder = StateGraph(State)
 
 # Add the node to the graph in an appropriate location
 # and connect it to the relevant nodes.
 builder.add_node("human_approval", human_approval)
-builder.add_node("call_llm",call_llm)
+builder.add_node("call_llm", call_llm)
 
-builder.add_edge(START,"human_approval")
+builder.add_edge(START, "human_approval")
 
 checkpointer = InMemorySaver()
 

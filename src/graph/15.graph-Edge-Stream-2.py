@@ -2,19 +2,23 @@ from typing import TypedDict
 from langgraph.config import get_stream_writer
 from langgraph.graph import StateGraph, START, END
 
+
 class State(TypedDict):
     query: str
     answer: str
+
 
 def node(state: State):
     writer = get_stream_writer()
     writer({"自定义key": "在节点内返回自定义信息"})
     return {"answer": "some data"}
 
+
 def node2(state: State):
     writer = get_stream_writer()
     writer({"自定义key": "在节点内返回自定义信息2"})
     return {"answer": "some data"}
+
 
 graph = (
     StateGraph(State)

@@ -5,12 +5,15 @@ from typing import TypedDict, Annotated
 from langgraph.constants import END
 from langgraph.graph import StateGraph, MessagesState, START
 
+
 class State(TypedDict):
-    messages: Annotated[list[str],add]
+    messages: Annotated[list[str], add]
+
 
 # Subgraph
-def sub_node_1(state:State) -> MessagesState:
-    return {"messages":["response from subgraph"]}
+def sub_node_1(state: State) -> MessagesState:
+    return {"messages": ["response from subgraph"]}
+
 
 subgraph_builder = StateGraph(State)
 subgraph_builder.add_node("sub_node_1", sub_node_1)
@@ -29,5 +32,5 @@ builder.add_edge("subgraph_node", END)
 graph = builder.compile()
 
 # for chunk in graph.stream({"messages": ["hello subgraph"]},stream_mode="updates"):
-for chunk in graph.stream({"messages": ["hello subgraph"]},stream_mode="debug"):
+for chunk in graph.stream({"messages": ["hello subgraph"]}, stream_mode="debug"):
     print(chunk)

@@ -16,24 +16,27 @@ from langchain_core.messages import HumanMessage
 from typing_extensions import NotRequired
 
 
-
 # 创建模型实例
 llm = create_siliconflow_model("Qwen/Qwen3-8B")
 # model = create_siliconflow_model("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")
 
+
 class State(TypedDict):
     author: NotRequired[str]
     joke: NotRequired[str]
+
 
 def author_node(state: State) -> dict:
     prompt = "帮我推荐一位受人们欢迎的作家。只需要给出作家的名字即可。"
     author = llm.invoke(prompt)
     return {"author": author}
 
+
 def joke_node(state: State) -> dict:
     prompt = f"用作家：{state['author']} 的风格，写一个100字以内的笑话"
     joke = llm.invoke(prompt)
     return {"joke": joke}
+
 
 builder = StateGraph(State)
 
@@ -83,7 +86,7 @@ for state in states:
 # 1f0b70da-b8da-6dda-8000-4744a94545fb
 
 # ('__start__',)
-# 1f0b70da-b8d8-6ee0-bfff-0f62eae934a3    
+# 1f0b70da-b8d8-6ee0-bfff-0f62eae934a3
 
 
 # 选定某⼀个检查点。这⾥选择author_node，让⼤模型重新推荐作家
@@ -98,5 +101,5 @@ print(new_config)
 
 
 # 接下来，指定thread_id和checkpoint_id，进⾏重演
-res = graph.invoke(None,new_config)
+res = graph.invoke(None, new_config)
 print(res)

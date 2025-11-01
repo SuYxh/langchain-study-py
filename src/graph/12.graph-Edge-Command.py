@@ -5,18 +5,18 @@ from langgraph.constants import START, END
 from langgraph.graph import StateGraph
 from langgraph.types import Command
 
+
 # 配置状态
 class State(TypedDict):
     messages: Annotated[list[str], add]
 
-def node_1(state:State):
+
+def node_1(state: State):
     new_message = []
     for message in state["messages"]:
         new_message.append(message + "!")
-    return Command(
-        goto=END,
-        update={"messages":new_message}
-    )
+    return Command(goto=END, update={"messages": new_message})
+
 
 builder = StateGraph(State)
 builder.add_node("node1", node_1)
@@ -25,4 +25,4 @@ builder.add_node("node1", node_1)
 builder.add_edge(START, "node1")
 
 graph = builder.compile()
-print(graph.invoke({"messages":["hello","world","hello","graph"]}))
+print(graph.invoke({"messages": ["hello", "world", "hello", "graph"]}))

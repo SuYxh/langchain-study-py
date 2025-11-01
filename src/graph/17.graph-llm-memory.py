@@ -17,6 +17,7 @@ def call_model(state: MessagesState):
     response = model.invoke(state["messages"])
     return {"messages": response}
 
+
 builder = StateGraph(MessagesState)
 
 builder.add_node(call_model)
@@ -26,11 +27,7 @@ builder.add_edge(START, "call_model")
 checkpointer = InMemorySaver()
 graph = builder.compile(checkpointer=checkpointer)
 
-config = {
-    "configurable": {
-        "thread_id": "1"
-    }
-}
+config = {"configurable": {"thread_id": "1"}}
 
 for chunk in graph.stream(
     {"messages": [{"role": "user", "content": "湖南的省会是哪里？"}]},
