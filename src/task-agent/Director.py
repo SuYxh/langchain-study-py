@@ -9,9 +9,7 @@ from langgraph.graph import StateGraph
 # from langchain_community.embeddings import DashScopeEmbeddings
 # from langchain_community.vectorstores import RedisVectorStore
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.agents import AgentExecutor, create_react_agent
-from langchain import hub
-from langchain_mcp_adapters.tools import load_mcp_tools
+from langgraph.prebuilt import create_react_agent
 from llm import create_siliconflow_model
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from dotenv import load_dotenv
@@ -110,7 +108,12 @@ def travel_node(state: State):
     tools = asyncio.run(client.get_tools())
     print(f"获取到 {len(tools)} 个工具")
 
-    agent = create_react_agent(llm, tools)
+    # 使用 langgraph 的 create_react_agent
+    agent = create_react_agent(
+        model=llm,
+        tools=tools,
+        prompt="You are a helpful travel assistant. Use the available tools to help users with travel-related queries."
+    )
     response = agent.invoke({"messages": prompts})
 
     writer({"travel_result-response": response})
@@ -198,12 +201,12 @@ graph = builder.compile(checkpointer=checkpointer)
 if __name__ == "__main__":
     config = {"configurable": {"thread_id": "1"}}
     for chunk in graph.stream(
-        {"messages": ["给我讲一个郭德纲的笑话"]},
-        # {
-        #     "messages": [
-        #         HumanMessage(content="帮我规划一条从杭州富力中心到西湖的自驾路线")
-        #     ]
-        # },
+        # {"messages": ["给我讲一个郭德纲的笑话"]},
+        {
+            "messages": [
+                HumanMessage(content="帮我规划一条从杭州富力中心到西湖的自驾路线")
+            ]
+        },
         config,
         stream_mode="custom",
     ):
