@@ -23,6 +23,23 @@ class State(TypedDict):
     messages: Annotated[list[AnyMessage], add]
     type: str
 
+
+# 公共工具函数
+def get_message_content(message) -> str:
+    """提取消息内容，支持字符串和消息对象两种格式
+    
+    Args:
+        message: 字符串或消息对象
+        
+    Returns:
+        str: 消息的文本内容
+    """
+    if isinstance(message, str):
+        return message
+    else:
+        return message.content
+
+
 # 节点函数
 def supervisor_node(state: State):
     print(">>> supervisor_node")
@@ -42,7 +59,7 @@ def supervisor_node(state: State):
     
     prompts = [
         {"role": "system", "content": prompt},
-        {"role": "user", "content": state["messages"][0].content}
+        {"role": "user", "content": get_message_content(state["messages"][0])}
     ]
     
     response = llm.invoke(prompts)
@@ -70,7 +87,15 @@ def joke_node(state: State):
     writer = get_stream_writer()
     writer({"node": ">>>> joke_node"})
     
-    return {"messages": [HumanMessage(content="joke_node")], "type": "joke"}
+    system_prompt = "你是一个笑话大师，根据用户的问题写一个不超过100字的笑话。"
+    prompts = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": get_message_content(state["messages"][0])}
+    ]
+    
+    response = llm.invoke(prompts)
+    writer({"joke_result": response.content})
+    return {"messages": [HumanMessage(content=response.content)], "type": "joke"}
 
 def couplet_node(state: State):
     print(">>> couplet_node")
