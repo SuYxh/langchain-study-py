@@ -29,7 +29,8 @@ custom_client = httpx.Client(
 
 # 创建访问硅基流动的 Model
 model = init_chat_model(
-    "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", 
+    "Qwen/Qwen3-8B",
+    # "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", 
     model_provider="openai",
     base_url="https://api.siliconflow.cn/v1",
     api_key=api_key, 
@@ -37,17 +38,20 @@ model = init_chat_model(
 )
 
 # 调用模型并打印结果
-response = model.invoke("你是谁？能帮我解决什么问题？")
+# response = model.invoke("你是谁？能帮我解决什么问题？")
+# print("模型回复:")
+# print(response.content)
+
+
+agent = create_react_agent(
+    model=model,
+    tools=[],
+    prompt="You are a helpful assistant",
+)
+
+response =agent.invoke(
+    {"messages": [{"role": "user", "content": "你是谁？能帮我解决什么问题？"}]}
+)
+
 print("模型回复:")
-print(response.content)
-
-
-# agent = create_react_agent(
-#     model=model,
-#     tools=[],
-#     prompt="You are a helpful assistant",
-# )
-
-# agent.invoke(
-#     {"messages": [{"role": "user", "content": "你是谁？能帮我解决什么问题？"}]}
-# )
+print(response)
