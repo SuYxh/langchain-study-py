@@ -7,11 +7,11 @@ from langchain_openai import ChatOpenAI
 
 dotenv.load_dotenv()
 
-os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
-os.environ['OPENAI_BASE_URL'] = os.getenv("OPENAI_BASE_URL")
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+os.environ["OPENAI_BASE_URL"] = os.getenv("OPENAI_BASE_URL")
 
 # 初始化大语言模型
-llm = ChatOpenAI(model_name='openai/gpt-oss-20b:free', temperature=0)
+llm = ChatOpenAI(model_name="openai/gpt-oss-20b:free", temperature=0)
 # 使用LangChain为实体记忆设计的预定义模板
 prompt = ENTITY_MEMORY_CONVERSATION_TEMPLATE
 # 初始化实体记忆
@@ -21,7 +21,7 @@ chain = LLMChain(
     llm=llm,
     prompt=ENTITY_MEMORY_CONVERSATION_TEMPLATE,
     memory=ConversationEntityMemory(llm=llm),
-    #verbose=True,  # 设置为True可以看到链的详细推理过程
+    # verbose=True,  # 设置为True可以看到链的详细推理过程
 )
 
 # 进行几轮对话，记忆组件会在后台自动提取和存储实体信息
@@ -38,4 +38,3 @@ print(chain.memory.entity_store.store)
 answer = chain.invoke(input="你能告诉我蜘蛛侠住在哪里以及他的好朋友有哪些吗？")
 print("\nAI的回答:")
 print(answer)
-

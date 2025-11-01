@@ -10,7 +10,7 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 dotenv.load_dotenv()
 
 # 读取配置文件的信息
-os.environ['TAVILY_API_KEY'] = os.getenv("TAVILY_API_KEY")
+os.environ["TAVILY_API_KEY"] = os.getenv("TAVILY_API_KEY")
 
 
 # 获取Tavily搜索工具的实例
@@ -33,10 +33,10 @@ search_tool = Tool(
 
 
 # 获取大语言模型
-os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
-os.environ['OPENAI_BASE_URL'] = os.getenv("OPENAI_BASE_URL")
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+os.environ["OPENAI_BASE_URL"] = os.getenv("OPENAI_BASE_URL")
 
-llm = ChatOpenAI(model_name='gpt-4o-mini', temperature=0)
+llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 # llm = ChatOpenAI(model_name='openai/gpt-oss-20b:free', temperature=0)
 # llm = ChatOpenAI(model_name='qwen/qwen3-235b-a22b:free', temperature=0)
 
@@ -46,10 +46,10 @@ agent = AgentType.ZERO_SHOT_REACT_DESCRIPTION
 
 # 获取AgentExecutor的实例
 agent_executor = initialize_agent(
-    tools = [search_tool],
-    llm = llm,
-    agent = agent,
-    verbose = True, # 显示详细的日志信息
+    tools=[search_tool],
+    llm=llm,
+    agent=agent,
+    verbose=True,  # 显示详细的日志信息
 )
 
 

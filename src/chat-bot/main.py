@@ -19,29 +19,25 @@ import dotenv
 dotenv.load_dotenv()
 
 
-
 # 定义 AVILY_KEY 密钥
-os.environ['TAVILY_API_KEY'] = os.getenv("TAVILY_API_KEY")
+os.environ["TAVILY_API_KEY"] = os.getenv("TAVILY_API_KEY")
 
 # 查询 Tavily 搜索 API
 search = TavilySearchResults(max_results=1)
 
 # 1. 提供一个大模型
-os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
-os.environ['OPENAI_BASE_URL'] = os.getenv("OPENAI_BASE_URL")
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+os.environ["OPENAI_BASE_URL"] = os.getenv("OPENAI_BASE_URL")
 
 embedding_model = OpenAIEmbeddings()
 
 # 2.加载HTML内容为一个文档对象
 loader = WebBaseLoader("https://zh.wikipedia.org/wiki/%E7%8C%AB")
 docs = loader.load()
-#print(docs)
+# print(docs)
 
 # 3.分割文档
-splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000,
-    chunk_overlap=200
-)
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 
 documents = splitter.split_documents(docs)
 
@@ -53,7 +49,6 @@ retriever = vector.as_retriever()
 
 # 测试检索结果
 # print(retriever.invoke("猫的特征")[0])
-
 
 
 # 创建一个工具来检索文档
@@ -88,14 +83,14 @@ prompt = hub.pull("hwchase17/openai-functions-agent")
 agent = create_tool_calling_agent(model, tools, prompt)
 
 # 创建AgentExecutor对象
-agent_executor = AgentExecutor(agent=agent, tools=tools,verbose=True)
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 
 # print(agent_executor.invoke({"input": "猫的特征"}))
 
 
-
 store = {}
+
 
 # 调取指定session_id对应的memory
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
@@ -104,6 +99,7 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
         store[session_id] = ChatMessageHistory()
 
     return store[session_id]
+
 
 agent_with_chat_history = RunnableWithMessageHistory(
     runnable=agent_executor,

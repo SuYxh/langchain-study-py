@@ -1,17 +1,24 @@
 from langchain.agents import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
+
 # 获取Tavily搜索的实例
 from langchain_openai import ChatOpenAI
-from langchain.agents import initialize_agent, AgentType, create_tool_calling_agent, AgentExecutor
+from langchain.agents import (
+    initialize_agent,
+    AgentType,
+    create_tool_calling_agent,
+    AgentExecutor,
+)
 from langchain.tools import Tool
 import os
 import dotenv
 from langchain_openai import ChatOpenAI
 from langchain_community.tools.tavily_search import TavilySearchResults
+
 dotenv.load_dotenv()
 
 # 读取配置文件的信息
-os.environ['TAVILY_API_KEY'] = os.getenv("TAVILY_API_KEY")
+os.environ["TAVILY_API_KEY"] = os.getenv("TAVILY_API_KEY")
 
 
 # 获取Tavily搜索工具的实例
@@ -27,8 +34,8 @@ search_tool = Tool(
 
 
 # 获取大语言模型
-os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
-os.environ['OPENAI_BASE_URL'] = os.getenv("OPENAI_BASE_URL")
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+os.environ["OPENAI_BASE_URL"] = os.getenv("OPENAI_BASE_URL")
 llm = ChatOpenAI(
     model="gpt-4o-mini",
     temperature=0,
@@ -59,11 +66,7 @@ prompt_template = PromptTemplate.from_template(
 )
 
 # 获取Agent的实例：create_react_agent()
-agent = create_react_agent(
-    llm=llm,
-    prompt=prompt_template,
-    tools=[search_tool]
-)
+agent = create_react_agent(llm=llm, prompt=prompt_template, tools=[search_tool])
 
 # 获取AgentExecutor的实例
 agent_executor = AgentExecutor(
@@ -74,7 +77,7 @@ agent_executor = AgentExecutor(
 
 
 # 通过AgentExecutor的实例调用invoke(),得到响应
-result = agent_executor.invoke({"input":"langchain 目前最新版本是多少？"})
+result = agent_executor.invoke({"input": "langchain 目前最新版本是多少？"})
 
 # 处理响应
 print(result)

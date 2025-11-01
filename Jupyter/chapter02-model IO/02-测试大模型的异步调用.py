@@ -8,16 +8,19 @@ from langchain_openai import ChatOpenAI
 
 dotenv.load_dotenv()
 
-os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY1")
-os.environ['OPENAI_BASE_URL'] = os.getenv("OPENAI_BASE_URL")
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY1")
+os.environ["OPENAI_BASE_URL"] = os.getenv("OPENAI_BASE_URL")
 
 # 初始化大模型
 chat_model = ChatOpenAI(model="gpt-4o-mini")
 
+
 # 同步调用（对比组）
 def sync_test():
-    messages1 = [SystemMessage(content="你是一位乐于助人的智能小助手"),
-                 HumanMessage(content="请帮我介绍一下什么是机器学习"), ]
+    messages1 = [
+        SystemMessage(content="你是一位乐于助人的智能小助手"),
+        HumanMessage(content="请帮我介绍一下什么是机器学习"),
+    ]
     start_time = time.time()
     response = chat_model.invoke(messages1)  # 同步调用
     duration = time.time() - start_time
@@ -27,8 +30,10 @@ def sync_test():
 
 # 异步调用（实验组）
 async def async_test():
-    messages1 = [SystemMessage(content="你是一位乐于助人的智能小助手"),
-                 HumanMessage(content="请帮我介绍一下什么是机器学习"), ]
+    messages1 = [
+        SystemMessage(content="你是一位乐于助人的智能小助手"),
+        HumanMessage(content="请帮我介绍一下什么是机器学习"),
+    ]
     start_time = time.time()
     response = await chat_model.ainvoke(messages1)  # 异步调用
     duration = time.time() - start_time
@@ -50,13 +55,11 @@ if __name__ == "__main__":
     print("\n=== 并发测试 ===")
     start_time = time.time()
 
-
     async def run_concurrent_tests():
         # 创建3个异步任务
         tasks = [async_test() for _ in range(3)]
         # 并发执行所有任务
         return await asyncio.gather(*tasks)
-
 
     # 执行并发测试
     results = asyncio.run(run_concurrent_tests())
